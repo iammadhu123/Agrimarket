@@ -6,13 +6,24 @@ const morgan = require('morgan');
 const connectDB = require('./config/db');
 const errorHandler = require('./middleware/errorHandler');
 
-// Load environment variables
+// ===============================
+// Load Environment Variables
+// ===============================
+
 dotenv.config();
 
+// ===============================
 // Connect to MongoDB
+// ===============================
+
 connectDB();
 
+// ===============================
+// Create Express App
+// ===============================
+
 const app = express();
+
 // ===============================
 // CORS Configuration
 // ===============================
@@ -25,23 +36,38 @@ const allowedOrigins = [
 app.use(
   cors({
     origin: function (origin, callback) {
-      // Allow requests with no origin
+      // Allow requests without an origin
+      // Example: Postman, server-to-server requests
       if (!origin) {
         return callback(null, true);
       }
 
+      // Allow only approved frontend URLs
       if (allowedOrigins.includes(origin)) {
         return callback(null, true);
       }
 
-      return callback(new Error(`CORS not allowed for origin: ${origin}`));
+      // Reject unknown origins
+      return callback(
+        new Error(`CORS not allowed for origin: ${origin}`)
+      );
     },
 
     credentials: true,
 
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    methods: [
+      'GET',
+      'POST',
+      'PUT',
+      'PATCH',
+      'DELETE',
+      'OPTIONS',
+    ],
 
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    allowedHeaders: [
+      'Content-Type',
+      'Authorization',
+    ],
   })
 );
 
@@ -50,7 +76,12 @@ app.use(
 // ===============================
 
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+
+app.use(
+  express.urlencoded({
+    extended: true,
+  })
+);
 
 // ===============================
 // Logger
@@ -64,40 +95,82 @@ if (process.env.NODE_ENV === 'development') {
 // Routes
 // ===============================
 
-app.use('/api/auth', require('./routes/authRoutes'));
+app.use(
+  '/api/auth',
+  require('./routes/authRoutes')
+);
 
-app.use('/api/users', require('./routes/userRoutes'));
+app.use(
+  '/api/users',
+  require('./routes/userRoutes')
+);
 
-app.use('/api/categories', require('./routes/categoryRoutes'));
+app.use(
+  '/api/categories',
+  require('./routes/categoryRoutes')
+);
 
-app.use('/api/products', require('./routes/productRoutes'));
+app.use(
+  '/api/products',
+  require('./routes/productRoutes')
+);
 
-app.use('/api/cart', require('./routes/cartRoutes'));
+app.use(
+  '/api/cart',
+  require('./routes/cartRoutes')
+);
 
-app.use('/api/orders', require('./routes/orderRoutes'));
+app.use(
+  '/api/orders',
+  require('./routes/orderRoutes')
+);
 
-app.use('/api/reviews', require('./routes/reviewRoutes'));
+app.use(
+  '/api/reviews',
+  require('./routes/reviewRoutes')
+);
 
-app.use('/api/wishlist', require('./routes/wishlistRoutes'));
+app.use(
+  '/api/wishlist',
+  require('./routes/wishlistRoutes')
+);
 
-app.use('/api/expenses', require('./routes/expenseRoutes'));
+app.use(
+  '/api/expenses',
+  require('./routes/expenseRoutes')
+);
 
-app.use('/api/notifications', require('./routes/notificationRoutes'));
+app.use(
+  '/api/notifications',
+  require('./routes/notificationRoutes')
+);
 
-app.use('/api/complaints', require('./routes/complaintRoutes'));
+app.use(
+  '/api/complaints',
+  require('./routes/complaintRoutes')
+);
 
-app.use('/api/market-prices', require('./routes/marketPriceRoutes'));
+app.use(
+  '/api/market-prices',
+  require('./routes/marketPriceRoutes')
+);
 
-app.use('/api/payments', require('./routes/paymentRoutes'));
+app.use(
+  '/api/payments',
+  require('./routes/paymentRoutes')
+);
 
-app.use('/api/admin', require('./routes/adminRoutes'));
+app.use(
+  '/api/admin',
+  require('./routes/adminRoutes')
+);
 
 // ===============================
 // Health Check
 // ===============================
 
 app.get('/api/health', (req, res) => {
-  res.json({
+  res.status(200).json({
     success: true,
     message: 'AgriMarket API is running',
     env: process.env.NODE_ENV,
@@ -116,8 +189,8 @@ app.use((req, res) => {
 });
 
 // ===============================
-// Error Handler
-// Must be last
+// Global Error Handler
+// Must be LAST
 // ===============================
 
 app.use(errorHandler);
