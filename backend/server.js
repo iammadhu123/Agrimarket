@@ -13,7 +13,6 @@ dotenv.config();
 connectDB();
 
 const app = express();
-
 // ===============================
 // CORS Configuration
 // ===============================
@@ -27,7 +26,6 @@ app.use(
   cors({
     origin: function (origin, callback) {
       // Allow requests with no origin
-      // (Postman, server-to-server requests, etc.)
       if (!origin) {
         return callback(null, true);
       }
@@ -36,11 +34,14 @@ app.use(
         return callback(null, true);
       }
 
-      return callback(
-        new Error(`CORS not allowed for origin: ${origin}`)
-      );
+      return callback(new Error(`CORS not allowed for origin: ${origin}`));
     },
+
     credentials: true,
+
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+
+    allowedHeaders: ['Content-Type', 'Authorization'],
   })
 );
 
